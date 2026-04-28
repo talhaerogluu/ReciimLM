@@ -1,0 +1,89 @@
+{
+    "talha_test_001": {
+        "last_updated": "2026-04-24T19:17:24.685715",
+        "history": [
+            {
+                "user": "Odalarınızda mutfak var mı?",
+                "ai": "Üzgünüm, elimizde olan bilgilere göre odalarımızda mutfak bulunmuyor. Daha detaylı bilgi için lütfen bana daha fazla bilgi verin veya resepsiyon ile iletişime geçebilirsiniz."
+            },
+            {
+                "user": "Oteliniz ile ilgili bilgi verir misiniz ?",
+                "ai": "Elbette, size otelimize dair bilgi verebilirim. Odalarımız genellikle 1+1 tipindedir ve maksimum 5 kişi kapasitesine sahiptir. Odalarımızda 2 banyo bulunmaktadır ve yatak detayları 1 çift kişilik yatak, 2 tek kişilik yatak ve 1 kanepe olarak verilmiştir. Özellikle çatı katı odalarımızda göl manzarası bulunmakta ve bu odaların tavanı eğimlidir. Kafanızı duvara çarpmamak için dikkatli olmanız gerekmektedir.\n\nGöl çevresindeki düz yürüyüş yolları tekerlekli sandalye için uygundur. Ancak otelim eski bir yapı olduğu için asansör durumunu önceden sormanızı öneririm.\n\nFiyat"
+            },
+            {
+                "user": "Peki odalarınızda mutfak var mı ?",
+                "ai": "Üzgünüm, elimizdeki bilgilere göre odalarımızda mutfak bulunmuyor. Eğer daha detaylı bilgiye ihtiyacınız varsa, resepsiyon ile iletişime geçebilirsiniz."
+            },
+            {
+                "user": "Peki otelinizde araçlarımız için park alanı var mı ?",
+                "ai": "Üzgünüm, elimizdeki bilgilere göre otelimizde araç park alanı hakkında bilgi yok. Bu konuda daha detaylı bilgi almak için resepsiyon ile iletişime geçebilirsiniz. Yardımcı olabileceğim başka bir konu var mı?"
+            }
+        ]
+    },
+    "talha_test_002": {
+        "last_updated": "2026-04-24T19:25:53.915756",
+        "history": [
+            {
+                "user": "Odalarınızda mutfak var mı?",
+                "ai": "Üzgünüm, elimizde olan bilgilere göre odalarımızda mutfak bulunmuyor. Daha detaylı bilgi için lütfen bana daha fazla bilgi verin veya resepsiyon ile iletişime geçebilirsiniz."
+            }
+        ]
+    },
+    "talha_test_005": {
+        "last_updated": "2026-04-24T19:44:49.624330",
+        "history": [
+            {
+                "user": "Odalarınızda mutfak var mı?",
+                "ai": "Evet, odalarımızda küçük mutfak bulunmaktadır. Her dairede ocak, tencere, tabak, bardak, çatal, bıçak ve kaşık gibi temel mutfak ekipmanları bulunur. Ancak fırın mevcut değildir. Yemek hazırlayabileceğiniz bir ortam sunuyoruz."
+            }
+        ]
+    },
+    "deneme1": {
+        "last_updated": "2026-04-25T11:10:24.655885",
+        "history": [
+            {
+                "user": "Peki odalarınızda mutfak var mı ?",
+                "ai": "Üzgünüm, oda içersinde mutfak hakkında bilgi sahibi değilim. Size başka bir konuda yardımcı olabilir miyim?"
+            },
+            {
+                "user": "Odalarınızda mutfak var mı?",
+                "ai": "Üzgünüm, odalarımızda mutfak bulunmamaktadır. Başka bir konuda size yardımcı olabilir miyim?"
+            },
+            {
+                "user": "Peki odalarınızda mutfak var mı ?",
+                "ai": "Üzgünüm, odalarımızda mutfak bulunmamaktadır. Başka bir konuda size yardımcı olabilir miyim?"
+            }
+        ]
+    },
+    "deneme2": {
+        "last_updated": "2026-04-25T11:08:59.999312",
+        "history": [
+            {
+                "user": "Odalarınızda mutfak var mı?",
+                "ai": "Üzgünüm, elimizde olan bilgilere göre odalarımızda mutfak bulunmuyor. Daha detaylı bilgi için lütfen bana daha fazla bilgi verin veya otel resepsiyonuna doğrudan ulaşabilirsiniz."
+            },
+            {
+                "user": "Peki otelinizde araçlarımız için park alanı var mı ?",
+                "ai": "Evet, otelimizin misafirlerine özel ücretsiz otoparkı mevcuttur. Herhangi bir sorunuz olursa, resepsiyonumuza başvurabilirsiniz."
+            }
+        ]
+    },
+    "deneme3": {
+        "last_updated": "2026-04-25T11:09:55.034404",
+        "history": [
+            {
+                "user": "Oteliniz ile ilgili bilgi verir misiniz ?",
+                "ai": "Elbette, size Anemo Suit otel hakkında bilgi verebilirim. Ancak, belirli bir tarih veya konaklama türünü belirtirseniz, size daha detaylı ve özel bilgiler sunabilirim. Genel olarak, otelimizin fiyatları mevsime göre değişmektedir. Temmuz ve Ağustos ayları en yüksek fiyatlarla \"peak\" sezondur. Kış ve bahar aylarında ise farklı oranlarda indirimler bulunabilir. Uzungöl hakkında hemen hemen her şeyi biliyorum ve size en konforlu tatili yaşatmak için buradayım!"
+            }
+        ]
+    },
+    "deneme6": {
+        "last_updated": "2026-04-25T11:23:22.670108",
+        "history": [
+            {
+                "user": "Odalarınızda mutfak var mı?",
+                "ai": "Evet, odalarımızda küçük mutfak bulunmaktadır. Her dairede ocak, tencere, tabak, bardak, çatal, bıçak ve kaşık gibi temel mutfak ekipmanları bulunur. Ancak fırın mevcut değildir. Yemek hazırlayabileceğiniz bir ortam sunuyoruz."
+            }
+        ]
+    }
+}

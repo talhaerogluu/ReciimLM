@@ -1,0 +1,34 @@
+# --- TEMEL YAPAY ZEKA VE MODEL BİLEŞENLERİ ---
+transformers==4.46.3
+autoawq==0.2.7.post2
+accelerate
+bitsandbytes
+sentencepiece
+torch
+
+# --- RAG VE LANGCHAIN EKOSİSTEMİ ---
+langchain
+langchain-openai
+langchain-experimental
+langchain-community
+langchain-huggingface
+sentence-transformers
+
+# --- VEKTÖR VERİTABANI VE ARAMA ---
+chromadb
+rank_bm25
+
+# --- VERİ İŞLEME VE YARDIMCI ARAÇLAR ---
+unstructured
+markdown
+langdetect
+hf_transfer
+python-dotenv
+pydantic
+
+# -- Benim ekstralar ---
+vllm
+fastapi
+uvicorn
+
+# pip install -r requirements.txt
