@@ -2,6 +2,7 @@ from core.memory import memory_manager
 from services.llm_engine_with_vllm import detect_language, generate_response
 from rag.router import analyze_and_route_query
 from rag.retriever import get_retrieved_context
+from services.cache_service import check_semantic_cache, add_to_semantic_cache
 
 def rag_ask(user_question, session_id):
     """Hafızalı ve Hızlandırılmış RAG Ana Fonksiyonu"""
@@ -12,6 +13,12 @@ def rag_ask(user_question, session_id):
     # 2. Soruyu Analiz Et ve Yönlendir
     search_query, query_filter = analyze_and_route_query(user_question, chat_history)
     print(f"🔍 Aranan Sorgu: {search_query}")
+
+    cached_answer = check_semantic_cache(search_query)
+
+    if cached_answer:
+        memory_manager.add_message(session_id, user_question, cached_answer)
+        return cached_answer
     
     # 3. Bağlamı Çek (Reranker & Hibrit Arama)
     context = get_retrieved_context(search_query, query_filter)
@@ -70,6 +77,9 @@ def rag_ask(user_question, session_id):
     
     # 6. Hafızaya Kaydet
     memory_manager.add_message(session_id, user_question, ai_response)
+
+    # 7. Yeni Soru-Cevap Çiftini Semantic Cache'e Kaydet
+    add_to_semantic_cache(search_query, ai_response)
     
     return ai_response
 
