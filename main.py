@@ -1,8 +1,11 @@
+from datetime import datetime
 from core.memory import memory_manager
 from services.llm_engine_with_vllm import detect_language, generate_response
 from rag.router import analyze_and_route_query
 from rag.retriever import get_retrieved_context
 from services.cache_service import check_semantic_cache, add_to_semantic_cache
+from services.booking_service import fetch_booking_data_from_api
+import json
 
 def rag_ask(user_question, session_id):
     """Hafızalı ve Hızlandırılmış RAG Ana Fonksiyonu"""
@@ -11,23 +14,40 @@ def rag_ask(user_question, session_id):
     chat_history = memory_manager.get_history(session_id)
     
     # 2. Soruyu Analiz Et ve Yönlendir
-    search_query, query_filter = analyze_and_route_query(user_question, chat_history)
+    search_query, query_filter, action = analyze_and_route_query(user_question, chat_history)
     print(f"🔍 Aranan Sorgu: {search_query}")
+    if action:
+        print(f"⚡ API ACTION YAKALANDI: {action}")
 
-    cached_answer = check_semantic_cache(search_query)
-
-    if cached_answer:
-        memory_manager.add_message(session_id, user_question, cached_answer)
-        return cached_answer
+    if not action:
+        cached_answer = check_semantic_cache(search_query)
+        if cached_answer:
+            memory_manager.add_message(session_id, user_question, cached_answer)
+            return cached_answer
     
     # 3. Bağlamı Çek (Reranker & Hibrit Arama)
     context = get_retrieved_context(search_query, query_filter)
     
+    live_booking_context = ""
+    if action and action.get("name") == "check_availability":
+        checkin = action.get("checkin")
+        checkout = action.get("checkout")
+        adults = action.get("adults", 2)  # Default 2 
+        children = action.get("children", 0)  # Default 0
+        print(f"🌐 RapidAPI'ye bağlanılıyor... ({checkin} -> {checkout} | {adults} Kişi)")
+        live_booking_context = fetch_booking_data_from_api(checkin, checkout, adults, children)
+        
+        # Canlı veriyi, ChromaDB'den gelen normal kuralların en üstüne yapıştırıyoruz!
+        context = f"{live_booking_context}\n\n--- OTEL GENEL BİLGİLERİ ---\n{context}"
+        print("✅ Canlı fiyatlar başarıyla asıl modele aktarıldı.")
+
     # 4. Dil Tespiti ve Prompt Hazırlığı
     lang = detect_language(user_question)
+    current_date = datetime.now().strftime("%Y-%m-%d")
     
     system_prompt = f"""
     You are a professional, helpful hotel receptionist and local guide.
+    Today's date is {current_date}.
 
     RULES:
     - You MUST respond ONLY in this language: {lang}
@@ -79,7 +99,8 @@ def rag_ask(user_question, session_id):
     memory_manager.add_message(session_id, user_question, ai_response)
 
     # 7. Yeni Soru-Cevap Çiftini Semantic Cache'e Kaydet
-    add_to_semantic_cache(search_query, ai_response)
+    if not action:  # Eğer bu bir API aksiyonu değilse, yani normal bir soruysa önbelleğe ekle
+        add_to_semantic_cache(search_query, ai_response)
     
     return ai_response
 
