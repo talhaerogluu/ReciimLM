@@ -16,6 +16,7 @@ load_dotenv(dotenv_path=env_path)
 # DİKKAT: Bu key'i ileride .env dosyasına taşı!
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 HOTEL_ID = os.getenv("HOTEL_ID")
+BASE_SERVER_URL = "https://senin-runpod-linkin-8000.proxy.runpod.net"
 
 ROOM_MAPPING = {
     522048715: "Zemin Kat Daireleri (Daire 101)",                    # Apartment - Ground Floor
@@ -43,7 +44,7 @@ def fetch_booking_data_from_api(checkin, checkout, adults=2, children=0):
         "languagecode": "tr",       # Çıktıların Türkçe gelmesi için tr yaptık
         "currency_code": "EUR"      # TL bazında fiyat görmek için TRY yapabilirsin (İstersen EUR kalsın)
     }
-    
+
     if children > 0:
         # Örn: children 2 ise -> "7,7" stringi oluşturur ve API'ye yollar
         querystring["children_age"] = ",".join(["7"] * children)
@@ -74,6 +75,7 @@ def parse_booking_data(data):
     basit bir metne çevirir.
     """
     extracted_rooms = []
+    extracted_media_urls = []
     
     # JSON yapısı "available" formatında ise
     if "available" in data:
@@ -114,10 +116,23 @@ def parse_booking_data(data):
 
         extracted_rooms.append(room_info)
 
+        if room_id in ROOM_MAPPING:
+            video_link = f"{BASE_SERVER_URL}/static/{room_id}.mp4"
+            if video_link not in extracted_media_urls:
+                extracted_media_urls.append(video_link)
+
     if not extracted_rooms:
          return "İstenilen tarihler için uygun oda bulunmuyor."
 
     final_text = "CANLI SİSTEM VERİSİ - ODA MÜSAİTLİĞİ VE FİYATLAR:\n"
     final_text += "\n".join(extracted_rooms)
     
-    return final_text
+    return final_text, extracted_media_urls
+
+if __name__ == "__main__":
+    # Hızlı bir test için
+    with open(BASE_DIR / "getRoomList.json", "r") as f:
+        sample_data = json.load(f)
+        deneme = parse_booking_data(sample_data)
+    with open(BASE_DIR / "yeni.txt", "w") as f_out:
+        json.dump(deneme, f_out, ensure_ascii=False, indent=4)

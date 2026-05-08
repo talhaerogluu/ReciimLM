@@ -1,4 +1,4 @@
-## İLERİNİN API SUNUCUSU: POWERED BU FASTAPI
+## İLERİNİN API SUNUCUSU: POWERED BY FASTAPI
 
 
 from fastapi import FastAPI, Request, HTTPException

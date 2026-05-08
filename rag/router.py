@@ -27,19 +27,21 @@ def analyze_and_route_query(query, history):
       - If they ask for general availability without dates, try to infer dates from the query or set action to null.
       - The action format MUST be: {"name": "check_availability", "checkin": "YYYY-MM-DD", "checkout": "YYYY-MM-DD", "adults": 2, "children": 0}       - If no availability check is needed, set "action" to null.
       - IMPORTANT: Extract the number of adult guests and children. If not specified, default adults to 2 and children to 0.
+    4. "needs_image": true or false. Set to true ONLY if the user is explicitly asking for photos, asking how something looks, or wants to visually explore the rooms/facilities. Otherwise, set to false.
       
     Example Output 1 (User speaks English):
     {
         "standalone_query": "What time does the hotel pool open?",
-        "filter": {"type": "hotel_info"}
-        "action": null
+        "filter": {"type": "hotel_info"},
+        "action": null,
     }
     
     Example Output 2 (User speaks Turkish: "kahvaltı var mı?"):
     {
         "standalone_query": "Otelde kahvaltı hizmeti var mı?",
-        "filter": {"type": "faq"}
-        "action": null
+        "filter": {"type": "faq"},
+        "action": null,
+        "needs_image": false
     }
 
     Example Output 3 (User speaks Arabic: "هل يوجد موقف سيارات؟"):
@@ -53,6 +55,14 @@ def analyze_and_route_query(query, history):
         "standalone_query": "15 Mayıs ve 18 Mayıs arası 3 yetişkin 2 çocuk için boş oda ve fiyat nedir?",
         "filter": {},
         "action": {"name": "check_availability", "checkin": "2026-05-15", "checkout": "2026-05-18", "adults": 3, "children": 2}
+    }
+
+    Example Output 5 (User: "Çatı katı dairelerinizin fotoğrafları var mı?"):
+    {
+        "standalone_query": "Çatı katı dairelerinin fotoğraflarını görebilir miyim?",
+        "filter": {},
+        "action": null,
+        "needs_image": true
     }
     
     No chat, no explanation, ONLY valid JSON.
@@ -71,8 +81,13 @@ def analyze_and_route_query(query, history):
     try:
         parsed_json = json.loads(json_str)
         # Yeni mimaride 3 değişken döndürüyoruz
-        return parsed_json.get("standalone_query", query), parsed_json.get("filter", {}), parsed_json.get("action", None)
+        return (
+            parsed_json.get("standalone_query", query),
+            parsed_json.get("filter", {}), 
+            parsed_json.get("action", None),
+            parsed_json.get("needs_image", False)
+        )
     except json.JSONDecodeError as e:
         print(f"JSON Parse Error in Router: {e}")
         print(f"Raw Output: {response_text}")
-        return query, {}, None
+        return query, {}, None, False

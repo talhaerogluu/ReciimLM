@@ -46,7 +46,7 @@ Tüm dairelerde standart olarak aşağıdaki imkanlar sunulmaktadır:
 ## Daire Detayları ve Kapasiteler
 
 ### Zemin Kat Daireleri
-* **Daire 101 (2+1 Tipi):**
+* **Daire 102 (2+1 Tipi):**
     * **Maksimum Kapasite:** 6 Kişi
     * **Banyo Sayısı:** 2
     * **Yatak Detayları:** 1 Çift Kişilik Yatak, 2 Tek Kişilik Yatak, 2 Açılabilir Kanepe.

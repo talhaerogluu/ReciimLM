@@ -8,38 +8,52 @@ from services.booking_service import fetch_booking_data_from_api
 import json
 
 def rag_ask(user_question, session_id):
-    """Hafızalı ve Hızlandırılmış RAG Ana Fonksiyonu"""
+    """Hafızalı, Hızlandırılmış ve Medya (Video/Resim) Destekli RAG Ana Fonksiyonu"""
     
     # 1. Hafızayı Çek
     chat_history = memory_manager.get_history(session_id)
     
     # 2. Soruyu Analiz Et ve Yönlendir
-    search_query, query_filter, action = analyze_and_route_query(user_question, chat_history)
+    search_query, query_filter, action, needs_image = analyze_and_route_query(user_question, chat_history)
     print(f"🔍 Aranan Sorgu: {search_query}")
+
     if action:
         print(f"⚡ API ACTION YAKALANDI: {action}")
 
+    # ÖNBELLEK KONTROLÜ
     if not action:
         cached_answer = check_semantic_cache(search_query)
         if cached_answer:
             memory_manager.add_message(session_id, user_question, cached_answer)
-            return cached_answer
+            # DÜZELTME 1: Erken dönüşlerde de boş medya listesi dönmeliyiz
+            return cached_answer, [] 
     
+    media_urls_to_send = []
+
     # 3. Bağlamı Çek (Reranker & Hibrit Arama)
-    context = get_retrieved_context(search_query, query_filter)
+    # DÜZELTME 2: Artık RAG'dan sadece metin değil, resim/video linkleri de dönüyor
+    context, rag_images = get_retrieved_context(search_query, query_filter)
     
     live_booking_context = ""
     if action and action.get("name") == "check_availability":
-        checkin = action.get("checkin")
-        checkout = action.get("checkout")
-        adults = action.get("adults", 2)  # Default 2 
-        children = action.get("children", 0)  # Default 0
-        print(f"🌐 RapidAPI'ye bağlanılıyor... ({checkin} -> {checkout} | {adults} Kişi)")
-        live_booking_context = fetch_booking_data_from_api(checkin, checkout, adults, children)
+        checkin, checkout = action.get("checkin"), action.get("checkout")
+        adults, children = action.get("adults", 2), action.get("children", 0)
+        print(f"🌐 RapidAPI'ye bağlanılıyor... ({checkin} -> {checkout} | {adults} Yetişkin, {children} Çocuk)")
+        
+        # DÜZELTME 3: API'den de artık odanın özel resimleri/videoları dönüyor
+        live_booking_context, api_images = fetch_booking_data_from_api(checkin, checkout, adults, children)
         
         # Canlı veriyi, ChromaDB'den gelen normal kuralların en üstüne yapıştırıyoruz!
         context = f"{live_booking_context}\n\n--- OTEL GENEL BİLGİLERİ ---\n{context}"
-        print("✅ Canlı fiyatlar başarıyla asıl modele aktarıldı.")
+        
+        # SATIŞ SENARYOSU: API'den gelen canlı oda medyalarını listeye ekle
+        media_urls_to_send = api_images 
+        print("✅ Canlı fiyatlar ve oda medyaları başarıyla çekildi.")
+        
+    else:
+        # DÜZELTME 4: KEŞİF SENARYOSU (needs_image mantığı)
+        if needs_image:
+            media_urls_to_send = rag_images
 
     # 4. Dil Tespiti ve Prompt Hazırlığı
     lang = detect_language(user_question)
@@ -99,10 +113,11 @@ def rag_ask(user_question, session_id):
     memory_manager.add_message(session_id, user_question, ai_response)
 
     # 7. Yeni Soru-Cevap Çiftini Semantic Cache'e Kaydet
-    if not action:  # Eğer bu bir API aksiyonu değilse, yani normal bir soruysa önbelleğe ekle
+    if not action:
         add_to_semantic_cache(search_query, ai_response)
     
-    return ai_response
+    # DÜZELTME 5: Sadece AI metni değil, gönderilecek medya listesini de dön!
+    return ai_response, media_urls_to_send
 
 # --- TEST SENARYOSU ---
 if __name__ == "__main__":
@@ -110,10 +125,11 @@ if __name__ == "__main__":
     
     print("-" * 50)
     soru1 = "Otelin giriş ve çıkış saatleri nedir?"
-    cevap1 = rag_ask(soru1, kullanici_id)
-    print(f"\nSoru: {soru1}\nCevap: {cevap1}\n")
+    # Test kısmını da iki değer alacak şekilde güncelledik
+    cevap1, medya1 = rag_ask(soru1, kullanici_id)
+    print(f"\nSoru: {soru1}\nCevap: {cevap1}\nGidecek Medya: {medya1}\n")
     
     print("-" * 50)
     soru2 = "Peki bu saatleri esnetme şansımız var mı?"
-    cevap2 = rag_ask(soru2, kullanici_id)
-    print(f"\nSoru: {soru2}\nCevap: {cevap2}\n")
+    cevap2, medya2 = rag_ask(soru2, kullanici_id)
+    print(f"\nSoru: {soru2}\nCevap: {cevap2}\nGidecek Medya: {medya2}\n")
